@@ -54,27 +54,19 @@ class Wallet {
   }
 
   static calculateBalance(blockchain, address) {
-    let balance = 0, input = 0, found = false;
+    let balance = 0, input = 0;
 
     for (let i = blockchain.length - 1; i > 0; i--) {
       const transaction = blockchain[i].data;
       for (let j = transaction.length - 1; j > -1; j--) {
         if (transaction[j].outputs[0].addressTx == address) {
           balance = transaction[j].outputs[0].amountTx;
-          found = true;
           break;
         }
       }
-      if (found) break;
-    }
-
-    for (let i = blockchain.length - 1; i > 0; i--) {
-      const transaction = blockchain[i].data;
       transaction.forEach(tx => {
         tx.outputs.forEach(outputs => {
-          //const regex = /^[0-9]+$/;
           if (outputs.addressRx == address) {
-            //if (regex.test(outputs.amountRx)) 
             input += outputs.amountRx;
           }
         })
