@@ -1,0 +1,12 @@
+const DIFFICULTY = 3;
+const MINE_RATE = 15000;
+const MINING_FEE_PERCENTAGE = 0.01;
+
+const INITIAL_BALANCE = 1000;
+
+module.exports = {
+    DIFFICULTY,
+    MINE_RATE,
+    MINING_FEE_PERCENTAGE,
+    INITIAL_BALANCE,
+};

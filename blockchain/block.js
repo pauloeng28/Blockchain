@@ -1,0 +1,74 @@
+const ChainUtil = require('../chain-util/chain-util');
+const {DIFFICULTY} = require('../config');
+
+
+class Block {
+
+    constructor(timestamp, lastHash, hash, data, nonce, difficulty) {
+
+        this.timestamp = timestamp;
+        this.lastHash = lastHash;
+        this.hash = hash;
+        this.data = data;
+        this.nonce = nonce;
+        this.difficulty = difficulty || DIFFICULTY;
+
+    }
+
+    toString() {
+        return `Block:
+                Data = ${this.data}
+                Timestamp = ${this.timestamp}                
+                Hash = ${this.hash.substring(0, 20)}
+                LastHash = ${this.lastHash.substring(0, 20)}
+                Nonce = ${this.nonce}
+                Difficulty = ${this.difficulty}`;
+    }
+
+    static genesis() {
+
+        return new this('Genesis time', '---', '000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f', [], 0, DIFFICULTY);
+
+    }
+
+    static mineBlock(lastBlock, data) {
+
+        let hash, timestamp;        
+        const lastHash = lastBlock.hash;
+        let{difficulty} = lastBlock;
+        let nonce = 0;
+
+        do{
+            nonce++;
+            timestamp = Date.now();
+            difficulty = Block.adjustDifficulty(lastBlock, timestamp);
+            hash = Block.hash(timestamp, lastHash, data, nonce, difficulty);
+        } while(hash.substring(0, difficulty) !== '0'.repeat(difficulty));
+        
+
+        return new this(timestamp, lastHash, hash, data, nonce, difficulty);
+
+    }
+
+    static hash(timestamp, lastHash, data, nonce, difficulty) {
+
+        return ChainUtil.hash(`${timestamp}${lastHash}${data}${nonce}${difficulty}`).toString();
+    }
+
+    static blockHash(block) {
+
+        const { timestamp, lastHash, data, nonce, difficulty } = block;
+
+        return Block.hash(timestamp, lastHash, data, nonce, difficulty);
+    }
+
+    static adjustDifficulty(lastBlock, currentTime){
+
+        let{difficulty} = lastBlock;
+        //difficulty = lastBlock.timestamp + MINE_RATE > currentTime ? difficulty + 1 : difficulty - 1;
+        return difficulty; 
+    }
+}
+
+module.exports = Block;
+
